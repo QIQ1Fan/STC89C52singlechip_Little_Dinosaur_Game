@@ -1,0 +1,149 @@
+C51 COMPILER V9.54   MAIN                                                                  10/24/2025 19:37:56 PAGE 1   
+
+
+C51 COMPILER V9.54, COMPILATION OF MODULE MAIN
+OBJECT MODULE PLACED IN .\Objects\main.obj
+COMPILER INVOKED BY: D:\Keil5\C51\BIN\C51.EXE main.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND PRINT(.\Listings\main.l
+                    -st) TABS(2) OBJECT(.\Objects\main.obj)
+
+line level    source
+
+   1          
+   2          //                                              小恐龙障碍赛抽象版
+   3          //                                              小恐龙障碍赛抽象版
+   4          //                                              小恐龙障碍赛抽象版
+   5          //                                              小恐龙障碍赛抽象版
+   6          //                                              小恐龙障碍赛抽象版
+   7          
+   8          
+   9          #include <REGX52.H>
+  10          #include "LCD1602.h"
+  11          #include "MatrixKey.h"
+  12          #include "delay.h"
+  13          
+  14          unsigned char point;
+  15          unsigned char keynum;
+  16          unsigned char dragonspace=1;//龙状态（1在地0在天）
+  17          unsigned char obstruction=16;//障碍物
+  18          unsigned char counter=0;//陷阱计数
+  19          unsigned char speed=3;//陷阱速度计数
+  20          unsigned char cut=5;//关卡分界限度
+  21          
+  22          void main()
+  23          {
+  24   1        home:point=0;cut=5;speed=3;//分归零，界限回归标准，速度回归标准
+  25   1        
+  26   1        LCD_Init();
+  27   1        LCD_ShowString(1,1,"                ");
+  28   1        LCD_ShowString(2,1,"                ");
+  29   1        LCD_ShowString(2,1,"i_______________");
+  30   1        LCD_ShowString(1,10,"point");
+  31   1        while(1)
+  32   1        {
+  33   2          keynum=MatrixKey();//矩阵数给
+  34   2          
+  35   2          if(keynum==1&&dragonspace==1)
+  36   2          {
+  37   3            dragonspace=0;//龙在天
+  38   3            LCD_ShowChar(2,1,'_');
+  39   3            LCD_ShowChar(1,1,'i');
+  40   3            LCD_ShowString(1,4,"jump!");//! is 7
+  41   3            
+  42   3            counter=0;
+  43   3          } 
+  44   2          
+  45   2          counter++;
+  46   2          
+  47   2          if(counter>=speed)//陷阱速度计数
+  48   2          {
+  49   3              counter=0;//回收counter
+  50   3              if(obstruction<16)//清理前面的障碍
+  51   3              {
+  52   4              LCD_ShowString(2,obstruction,"_");
+  53   4              }
+  54   3              obstruction--;//移动
+C51 COMPILER V9.54   MAIN                                                                  10/24/2025 19:37:56 PAGE 2   
+
+  55   3              if(obstruction==0)//重新出现
+  56   3              {
+  57   4              obstruction=16;
+  58   4              }
+  59   3              if(obstruction<16)//显示陷阱
+  60   3              {
+  61   4              LCD_ShowChar(2,obstruction,'#');
+  62   4              } 
+  63   3              
+  64   3              if(dragonspace==0)
+  65   3              {
+  66   4                static unsigned char jumpcount=0;//跳跃计数器防delay
+  67   4                jumpcount++;
+  68   4                if(jumpcount>=2)
+  69   4                {
+  70   5                  jumpcount=0;
+  71   5                  dragonspace=1;
+  72   5                  LCD_ShowChar(1,1,' ');//清地龙
+  73   5                  LCD_ShowChar(2,1,'i');//显龙
+  74   5                  LCD_ShowString(1,4,"     ");//清jump
+  75   5                }
+  76   4              }
+  77   3           }
+  78   2          if(dragonspace==1&&obstruction==1)//失败部分
+  79   2          {
+  80   3            LCD_Init();
+  81   3            LCD_ShowString(1, 1,"game over");
+  82   3            while(1)
+  83   3            {
+  84   4              Delay(1);
+  85   4              keynum=MatrixKey();
+  86   4              if(keynum==2)
+  87   4              {
+  88   5                goto home;
+  89   5              }
+  90   4             Delay(1);
+  91   4            } 
+  92   3          }
+  93   2          if(dragonspace==0&&obstruction==1)//过后加分
+  94   2          {
+  95   3            point++;
+  96   3            LCD_ShowNum(1,15,point,2);
+  97   3          }
+  98   2          if(point>=cut)
+  99   2          {
+ 100   3            speed--;
+ 101   3            cut+=5;
+ 102   3          }
+ 103   2          if(point==20)
+ 104   2          {
+ 105   3            LCD_Init();
+ 106   3            LCD_ShowString(1, 1,"you win");//胜利部分
+ 107   3            while(1)
+ 108   3            {
+ 109   4              Delay(1);
+ 110   4              keynum=MatrixKey();
+ 111   4              if(keynum==2)
+ 112   4              {
+ 113   5                goto home;
+ 114   5              }
+ 115   4             Delay(1);
+ 116   4            }
+C51 COMPILER V9.54   MAIN                                                                  10/24/2025 19:37:56 PAGE 3   
+
+ 117   3          }
+ 118   2           
+ 119   2          Delay(150);   
+ 120   2          }
+ 121   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    381    ----
+   CONSTANT SIZE    =     72    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =      8    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)
